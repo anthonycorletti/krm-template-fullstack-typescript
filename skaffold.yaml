@@ -1,0 +1,26 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: krm_template_fullstack_typesript
+build:
+  artifacts:
+    - image: gcr.io/krm-template-testing/api
+      context: api
+      docker:
+        dockerfile: Dockerfile
+    - image: gcr.io/krm-template-testing/ui
+      context: ui
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          NEXT_PUBLIC_API_URL: http://api.default:8000
+deploy:
+  kustomize:
+    paths:
+      - overlays/development
+profiles:
+  - name: prod
+    deploy:
+      kustomize:
+        paths:
+          - overlays/production
