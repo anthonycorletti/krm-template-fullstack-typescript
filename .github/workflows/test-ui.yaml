@@ -14,7 +14,9 @@ on:
       - ".github/workflows/test-ui.yaml"
 
 env:
-  UI_IMAGE_NAME: anthonycorletti/krm-template-fullstack-typescript-ui # TODO: replace with your image name
+  UI_IMAGE_NAME: gcr.io/krm-template-testing/ui # TODO: replace with your image name
+  GKE_CLUSTER_NAME: autopilot-cluster-1 # TODO: replace with your cluster name
+  GKE_REGION: us-central1 # TODO: replace with your cluster region
 
 jobs:
   test-ui:
@@ -23,6 +25,11 @@ jobs:
       matrix:
         node-version: [16.x]
       fail-fast: false
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -45,17 +52,7 @@ jobs:
 
       - name: skaffold build container
         if: github.event_name == 'pull_request'
-        working-directory: ui
         run: skaffold build --push=false --cache-artifacts=false --build-image=$UI_IMAGE_NAME
-
-      - name: skaffold build container
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        working-directory: ui
-        run: skaffold build --cache-artifacts=false --build-image=$UI_IMAGE_NAME
-
-      - name: set up gcloud sdk
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: "google-github-actions/setup-gcloud@v0"
 
       - id: gcp_auth
         name: authenticate to gcp
@@ -65,7 +62,19 @@ jobs:
           workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_ID_DEV }}/locations/global/workloadIdentityPools/github/providers/github"
           service_account: "${{ secrets.GCP_SA_DEV }}"
 
+      - name: Set up docker to communicate via gcloud cli
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          gcloud auth login --brief --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
+          gcloud auth configure-docker
+
+      - name: skaffold build and push
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          skaffold build --cache-artifacts=false --build-image=$UI_IMAGE_NAME
+
       - name: skaffold deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        working-directory: ui
-        run: skaffold deploy --images=$UI_IMAGE_NAME
+        run: |
+          gcloud container clusters get-credentials $GKE_CLUSTER_NAME --region $GKE_REGION
+          skaffold deploy --images=$UI_IMAGE_NAME
