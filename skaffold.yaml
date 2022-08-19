@@ -4,11 +4,11 @@ metadata:
   name: krm_template_fullstack_typesript
 build:
   artifacts:
-    - image: anthonycorletti/krm-template-fullstack-typescript-api
+    - image: gcr.io/krm-template-testing/api
       context: api
       docker:
         dockerfile: Dockerfile
-    - image: anthonycorletti/krm-template-fullstack-typescript-ui
+    - image: gcr.io/krm-template-testing/ui
       context: ui
       docker:
         dockerfile: Dockerfile

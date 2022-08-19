@@ -14,7 +14,7 @@ on:
       - ".github/workflows/test-api.yaml"
 
 env:
-  API_IMAGE_NAME: gcr.io/krm-template-testing/api # TODO: replace with your image name
+  API_IMAGE_NAME: gcr.io/krm-template-testing/api # TODO:  replace with your image name
   GKE_CLUSTER_NAME: autopilot-cluster-1 # TODO: replace with your cluster name
   GKE_REGION: us-central1 # TODO: replace with your cluster region
 
