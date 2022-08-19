@@ -2,16 +2,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi
+  name: api
 spec:
   selector:
     matchLabels:
-      app: fastapi
+      app: api
   template:
     spec:
       containers:
-        - name: fastapi
-          image: anthonycorletti/krm-template-python-app:v0.0.1
+        - name: api
+          image: anthonycorletti/krm-template-fullstack-typescript-api:v0.0.1
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+spec:
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    spec:
+      containers:
+        - name: ui
+          image: anthonycorletti/krm-template-fullstack-typescript-ui:v0.0.1
           resources:
             requests:
               memory: "256Mi"

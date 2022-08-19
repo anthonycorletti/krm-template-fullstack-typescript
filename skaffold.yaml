@@ -5,11 +5,13 @@ metadata:
 build:
   artifacts:
     - image: anthonycorletti/krm-template-fullstack-typescript-api
+      context: api
       docker:
-        dockerfile: api/Dockerfile
+        dockerfile: Dockerfile
     - image: anthonycorletti/krm-template-fullstack-typescript-ui
+      context: ui
       docker:
-        dockerfile: ui/Dockerfile
+        dockerfile: Dockerfile
 deploy:
   kustomize:
     paths:

@@ -2,13 +2,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi
+  name: api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: fastapi
+      app: api
   template:
     metadata:
       labels:
-        app: fastapi
+        app: api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
