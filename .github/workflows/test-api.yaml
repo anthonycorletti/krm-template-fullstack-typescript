@@ -34,13 +34,14 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: apt-get update
+      - name: update and install packages
         run: |
           sudo apt-get update -y \
           && sudo apt-get install -y curl \
           && curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 \
           && sudo install skaffold /usr/local/bin/ \
-          && curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          && curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash \
+          && skaffold config set --global collect-metrics false
 
       - name: set up node
         uses: actions/setup-node@v1
