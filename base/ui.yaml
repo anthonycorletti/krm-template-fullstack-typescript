@@ -29,8 +29,9 @@ metadata:
 spec:
   selector:
     app: ui
+  type: NodePort
   ports:
-    - port: 3000
+    - port: 80
       targetPort: 3000
 ---
 apiVersion: networking.k8s.io/v1
@@ -38,8 +39,7 @@ kind: Ingress
 metadata:
   name: fullstack-typescript
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: gce
 spec:
   rules:
     - http:

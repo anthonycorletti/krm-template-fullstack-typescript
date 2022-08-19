@@ -12,6 +12,8 @@ build:
       context: ui
       docker:
         dockerfile: Dockerfile
+        buildArgs:
+          NEXT_PUBLIC_API_URL: http://api.default:8000
 deploy:
   kustomize:
     paths:
