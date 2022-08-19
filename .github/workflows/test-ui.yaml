@@ -1,0 +1,71 @@
+# name: test-ui
+
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "ui/**"
+#       - ".github/workflows/test-ui.yaml"
+#   pull_request:
+#     types: [opened, synchronize]
+#     paths:
+#       - "ui/**"
+#       - ".github/workflows/test-ui.yaml"
+
+# env:
+#   UI_IMAGE_NAME: anthonycorletti/krm-template-fullstack-typescript-ui # TODO: replace with your image name
+
+# jobs:
+#   test-ui:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         node-version: [16.x]
+#       fail-fast: false
+#     steps:
+#       - name: checkout
+#         uses: actions/checkout@v2
+
+#       - name: apt-get update
+#         run: sudo apt-get update -y
+
+#       - name: set up node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: ${{ matrix.node-version }}
+
+#       - name: install dependencies
+#         working-directory: ui
+#         run: ./scripts/install.sh
+
+#       - name: run tests
+#         working-directory: ui
+#         run: ./scripts/test.sh
+
+#       - name: skaffold build container
+#         if: github.event_name == 'pull_request'
+#         working-directory: ui
+#         run: skaffold build --push=false --cache-artifacts=false --build-image=$UI_IMAGE_NAME
+
+#       - name: skaffold build container
+#         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#         working-directory: ui
+#         run: skaffold build --cache-artifacts=false --build-image=$UI_IMAGE_NAME
+
+#       - name: set up gcloud sdk
+#         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#         uses: "google-github-actions/setup-gcloud@v0"
+
+#       - id: gcp_auth
+#         name: authenticate to gcp
+#         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#         uses: "google-github-actions/auth@v0.4.0"
+#         with:
+#           workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_ID_DEV }}/locations/global/workloadIdentityPools/github/providers/github"
+#           service_account: "${{ secrets.GCP_SA_DEV }}"
+
+#       - name: skaffold deploy
+#         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+#         working-directory: ui
+#         run: skaffold deploy --images=$UI_IMAGE_NAME
